@@ -38,6 +38,38 @@ or
 PROXY_IP = "172.66.45.9:443,104.18.128.25:443,162.159.136.94:443"
 ```
 
+## Optional Variables
+
+### DNS_SERVER_ADDRESS
+
+The upstream DNS server IP or hostname used when the client sends UDP port-53 (DNS) queries through the proxy. Providing a reliable DNS server reduces client-side DNS EOF errors.
+
+**Default**: `8.8.8.8` (Google Public DNS)
+**Example**:
+```
+DNS_SERVER_ADDRESS = "1.1.1.1"
+```
+
+Popular choices:
+| Provider | Address |
+|---|---|
+| Google (default) | `8.8.8.8` |
+| Cloudflare | `1.1.1.1` |
+| Quad9 | `9.9.9.9` |
+
+### DNS_SERVER_PORT
+
+The port of the upstream DNS server.
+
+**Default**: `53`
+**Example**:
+```
+DNS_SERVER_PORT = "53"
+```
+
+> **Note**: The Worker relays DNS queries over TCP to the upstream server, which is
+> standard for DNS-over-TCP (RFC 7766). Most public DNS resolvers accept port 53 over TCP.
+
 ## Setting Environment Variables
 
 ### Method 1: Wrangler CLI (Recommended)
@@ -57,6 +89,10 @@ Add to your `wrangler.toml`:
 [vars]
 UUID = "your-uuid-here"
 PROXY_IP = "proxy-ip:port"
+
+# Optional DNS relay settings
+DNS_SERVER_ADDRESS = "8.8.8.8"
+DNS_SERVER_PORT = "53"
 ```
 
 ### Method 3: Cloudflare Dashboard
@@ -96,3 +132,11 @@ If proxy connections fail:
 2. Check that ports are open and correctly specified
 3. Ensure proxy servers support WebSocket connections
 4. Test each proxy IP individually to identify issues
+
+### DNS EOF Errors
+
+If the client reports `dns: exchange failed … EOF`:
+1. Set `DNS_SERVER_ADDRESS` to a reliable resolver such as `1.1.1.1` or `8.8.8.8`
+2. Ensure the client v2rayN DNS settings use Bootstrap DNS `1.1.1.1` and Remote DoH `https://cloudflare-dns.com/dns-query`
+3. In v2rayN configure the VLESS server with **WS path `/ws`** (with leading slash)
+4. If DoH is blocked on the local network, disable custom DNS in the client and use System DNS as a fallback

@@ -5,7 +5,7 @@
  * @returns VLESS subscription URL as string
  */
 export function generateSubscription(uuid: string, url: URL): string {
-  return `vless://${uuid}@${url.hostname}:443?encryption=none&security=tls&sni=${url.hostname}&fp=chrome&type=ws&host=${url.hostname}&path=ws&ed=4096#${url.hostname}`
+  return `vless://${uuid}@${url.hostname}:443?encryption=none&security=tls&sni=${url.hostname}&fp=chrome&type=ws&host=${url.hostname}&path=%2Fws&ed=4096#${url.hostname}`
 }
 
 /**
