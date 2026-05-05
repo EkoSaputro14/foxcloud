@@ -22,3 +22,13 @@ PROXY_IP = "your-proxy-ip:443"
 
 # For multiple proxy servers, use comma-separated IPs:
 # PROXY_IP = "ip1:port1,ip2:port2,ip3:port3"
+
+# DNS relay configuration (optional)
+# Upstream DNS server used when the client sends UDP port-53 queries through the proxy.
+# Defaults to Google Public DNS (8.8.8.8:53) when not set.
+# DNS_SERVER_ADDRESS = "8.8.8.8"
+# DNS_SERVER_PORT = "53"
+#
+# Alternatives:
+#   Cloudflare: DNS_SERVER_ADDRESS = "1.1.1.1"
+#   Google:     DNS_SERVER_ADDRESS = "8.8.8.8"

@@ -94,7 +94,8 @@ export function processWebSocket(request: Request, env: Env): Response {
     .then(async (header) => {
       if (header.isUDP) {
         if (header.port === 53) {
-          await processDNS(server, header)
+          await processDNS(server, header, env)
+          return
         } else {
           throw Error('UDP transport is unsupported')
         }

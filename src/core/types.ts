@@ -3,6 +3,10 @@
 export interface Env {
   UUID: string
   PROXY_IP: string
+  /** Upstream DNS server IP/hostname used for DNS relay (UDP port 53). Default: 8.8.8.8 */
+  DNS_SERVER_ADDRESS?: string
+  /** Upstream DNS server port used for DNS relay. Default: 53 */
+  DNS_SERVER_PORT?: string
 }
 
 export interface Header {
