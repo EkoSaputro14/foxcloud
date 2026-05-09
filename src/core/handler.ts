@@ -26,7 +26,7 @@ export async function handleRequest(
 
     // Handle XHTTP tunnel requests (HTTP/2 stream)
     if (url.pathname === '/xhttp') {
-      const isXHTTPRequest = request.method === 'POST' && request.body !== null
+      const isXHTTPRequest = request.method === 'POST'
       if (isXHTTPRequest) {
         return await processXHTTP(request, env, ctx)
       }

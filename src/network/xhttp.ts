@@ -7,6 +7,7 @@ import type { Env } from '../core/types'
 import type { Header } from '../protocols/index'
 
 const MAX_HEADER_SIZE = 8192
+const INVALID_PROTOCOL_HEADER = 'invalid protocol header'
 
 function concatUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
   const result = new Uint8Array(a.byteLength + b.byteLength)
@@ -22,7 +23,7 @@ function isIncompleteHeaderError(error: unknown, size: number): boolean {
   if (error instanceof RangeError) {
     return true
   }
-  return error instanceof Error && error.message === 'invalid protocol header'
+  return error instanceof Error && error.message === INVALID_PROTOCOL_HEADER
 }
 
 async function readHeader(
@@ -31,7 +32,7 @@ async function readHeader(
 ): Promise<Header> {
   let buffered = new Uint8Array(0)
 
-  while (buffered.byteLength <= MAX_HEADER_SIZE) {
+  while (buffered.byteLength < MAX_HEADER_SIZE) {
     const { done, value } = await reader.read()
     if (done || value === undefined) {
       throw Error('request body ended before protocol header')
@@ -82,7 +83,7 @@ async function dial(
 
     if (done || value === undefined) {
       await socket.close()
-      throw Error('connection was done')
+      throw Error('remote connection closed before sending data')
     }
 
     return { socket, firstChunk: value }
