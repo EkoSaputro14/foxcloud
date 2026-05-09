@@ -2,6 +2,7 @@ import { processHeader } from '../protocols/index'
 import { processTCP } from './tcp'
 import { safeCloseWebSocket } from '../utils/helpers'
 import { processDNS } from './dns'
+import { processUDPRelay } from './udp'
 
 import type { Env } from '../core/types'
 
@@ -78,6 +79,9 @@ function getHeader(
 export function processWebSocket(request: Request, env: Env): Response {
   const uuids = env.UUID.split(',').filter((v) => v !== '')
   const proxyIPs = env.PROXY_IP.split(',').filter((v) => v !== '')
+  const udpRelayEnabled = env.UDP_RELAY_ENABLED?.toLowerCase() === 'true'
+  const udpRelayHost = env.UDP_RELAY_HOST || 'udp-relay.hobihaus.space'
+  const udpRelayPort = Number.parseInt(env.UDP_RELAY_PORT || '7300', 10)
 
   const [client, server] = Object.values(new WebSocketPair())
   if (server === undefined) {
@@ -96,11 +100,20 @@ export function processWebSocket(request: Request, env: Env): Response {
         if (header.port === 53) {
           await processDNS(server, header)
         } else {
-          throw Error('UDP transport is unsupported')
+          if (!udpRelayEnabled) {
+            throw Error('UDP transport is unsupported')
+          }
+          await processUDPRelay(server, header, {
+            host: udpRelayHost,
+            port:
+              Number.isNaN(udpRelayPort) || udpRelayPort <= 0
+                ? 7300
+                : udpRelayPort,
+          })
         }
+      } else {
+        await processTCP(server, header, proxyIPs)
       }
-
-      await processTCP(server, header, proxyIPs)
     })
     .catch((err) => {
       console.error(err)
