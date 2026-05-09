@@ -38,6 +38,41 @@ or
 PROXY_IP = "172.66.45.9:443,104.18.128.25:443,162.159.136.94:443"
 ```
 
+## Optional Variables
+
+### UDP_RELAY_ENABLED
+
+Enable UDP relay for non-DNS UDP traffic (for example QUIC/HTTP3 on port 443).
+
+**Format**: `true` or `false` (string)
+**Default**: `false`
+**Example**:
+```
+UDP_RELAY_ENABLED = "true"
+```
+
+### UDP_RELAY_HOST
+
+Relay server hostname used when `UDP_RELAY_ENABLED` is `true`.
+
+**Format**: Hostname
+**Default**: `udp-relay.hobihaus.space`
+**Example**:
+```
+UDP_RELAY_HOST = "udp-relay.hobihaus.space"
+```
+
+### UDP_RELAY_PORT
+
+Relay server TCP port used when `UDP_RELAY_ENABLED` is `true`.
+
+**Format**: Port number (string)
+**Default**: `7300`
+**Example**:
+```
+UDP_RELAY_PORT = "7300"
+```
+
 ## Setting Environment Variables
 
 ### Method 1: Wrangler CLI (Recommended)
@@ -48,6 +83,15 @@ wrangler secret put UUID
 
 wrangler secret put PROXY_IP
 # Enter your proxy IP(s) when prompted
+
+wrangler secret put UDP_RELAY_ENABLED
+# Enter true to enable UDP relay
+
+wrangler secret put UDP_RELAY_HOST
+# Enter relay host (optional, default is udp-relay.hobihaus.space)
+
+wrangler secret put UDP_RELAY_PORT
+# Enter relay port (optional, default is 7300)
 ```
 
 ### Method 2: wrangler.toml
@@ -57,6 +101,9 @@ Add to your `wrangler.toml`:
 [vars]
 UUID = "your-uuid-here"
 PROXY_IP = "proxy-ip:port"
+UDP_RELAY_ENABLED = "false"
+# UDP_RELAY_HOST = "udp-relay.hobihaus.space"
+# UDP_RELAY_PORT = "7300"
 ```
 
 ### Method 3: Cloudflare Dashboard
@@ -96,3 +143,10 @@ If proxy connections fail:
 2. Check that ports are open and correctly specified
 3. Ensure proxy servers support WebSocket connections
 4. Test each proxy IP individually to identify issues
+
+### UDP Relay Issues
+
+If UDP traffic (non-53) fails:
+1. Verify `UDP_RELAY_ENABLED` is set to `true`
+2. Verify `UDP_RELAY_HOST` and `UDP_RELAY_PORT` are reachable
+3. Check Worker logs for UDP relay connection errors

@@ -82,6 +82,9 @@ FoxCloud requires the following environment variables to be configured in your C
 |---------|-------------|---------|
 | `UUID` | Comma-separated list of user UUIDs | `08dad8a6-8a6c-4424-9d63-62f3a9bf7f4f,49d598ee-4dfc-4001-95ca-99a5b6002e3c` |
 | `PROXY_IP` | Comma-separated list of proxy IPs with ports | `172.66.45.9:443,104.18.128.25:443,162.159.136.94:443` |
+| `UDP_RELAY_ENABLED` | Enable non-DNS UDP relay (`true`/`false`) | `false` |
+| `UDP_RELAY_HOST` | UDP relay hostname (used when enabled) | `udp-relay.hobihaus.space` |
+| `UDP_RELAY_PORT` | UDP relay TCP port (used when enabled) | `7300` |
 
 See the [Environment Variables Guide](docs/environment-variables.md) for detailed instructions on:
 - Generating secure UUIDs

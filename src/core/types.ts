@@ -3,6 +3,9 @@
 export interface Env {
   UUID: string
   PROXY_IP: string
+  UDP_RELAY_ENABLED?: string
+  UDP_RELAY_HOST?: string
+  UDP_RELAY_PORT?: string
 }
 
 export interface Header {
