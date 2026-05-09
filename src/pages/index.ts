@@ -258,6 +258,8 @@ const indexPageText = `<!DOCTYPE html>
       <h2>Getting Started</h2>
       <p>For online documentation and support please refer to the official Cloudflare Workers Documentation.</p>
       <p>Commercial support is available through Cloudflare.</p>
+      <p><strong>XHTTP (HTTP/2) transport:</strong> configure your client with transport <code>xhttp</code>, path <code>/xhttp</code>, and TLS enabled on port <code>443</code>. Keep host/SNI set to your worker domain.</p>
+      <p><strong>Optional HTTP/3 note:</strong> Cloudflare edge can accept HTTP/3 from clients, but this worker endpoint is designed and documented for XHTTP over HTTP/2.</p>
       <p>Configure your proxy settings to begin using FoxCloud.</p>
     </div>
   </main>
