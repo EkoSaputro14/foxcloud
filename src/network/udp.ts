@@ -32,6 +32,7 @@ export async function processUDPRelay(
   })
 
   const writer = socket.writable.getWriter()
+  let isClosed = false
   const writeRelayPacket = async (payload: ArrayBuffer) => {
     await writer.write(
       await buildRelayPacket(header.address, header.port, payload),
@@ -52,10 +53,16 @@ export async function processUDPRelay(
   }
 
   const closeSocket = async () => {
+    if (isClosed) {
+      return
+    }
+    isClosed = true
     ws.removeEventListener('message', onMessage)
     ws.removeEventListener('close', closeSocket)
     ws.removeEventListener('error', closeSocket)
-    writer.releaseLock()
+    try {
+      writer.releaseLock()
+    } catch (_) {}
     await socket.close()
   }
 

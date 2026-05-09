@@ -111,10 +111,9 @@ export function processWebSocket(request: Request, env: Env): Response {
                 : udpRelayPort,
           })
         }
-        return
+      } else {
+        await processTCP(server, header, proxyIPs)
       }
-
-      await processTCP(server, header, proxyIPs)
     })
     .catch((err) => {
       console.error(err)
