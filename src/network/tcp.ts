@@ -77,21 +77,9 @@ export async function processTCP(
 ) {
   let socket: Socket | undefined
   try {
-    // For domain addresses, we need to resolve them first
-    let address = header.address
-    if (isNaN(Number(address.split('.')[0]))) {
-      // This looks like a domain name, try to resolve it
-      try {
-        const resolved = await resolveDomain(address)
-        address = resolved
-      } catch (resolveErr) {
-        console.error(`Failed to resolve domain ${address}:`, resolveErr)
-        // Fall back to original address
-      }
-    }
-    
+    // Keep domain hostnames for upstream dialing so TLS SNI is preserved.
     socket = await dial(
-      { hostname: address, port: header.port },
+      { hostname: header.address, port: header.port },
       header.version,
       header.rawData,
       ws,
@@ -118,32 +106,4 @@ export async function processTCP(
       },
     }),
   )
-}
-
-// Add domain resolution function
-async function resolveDomain(domain: string): Promise<string> {
-  // Try to resolve the domain using DNS over HTTPS
-  try {
-    const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${domain}&type=A`, {
-      headers: {
-        'Accept': 'application/dns-json'
-      }
-    })
-    
-    if (response.ok) {
-      const data: any = await response.json()
-      if (data.Answer && data.Answer.length > 0) {
-        // Return the first A record
-        const aRecord = data.Answer.find((record: any) => record.type === 1)
-        if (aRecord) {
-          return aRecord.data
-        }
-      }
-    }
-  } catch (err) {
-    console.error('DNS resolution error:', err)
-  }
-  
-  // Fallback to the original domain if resolution fails
-  return domain
 }

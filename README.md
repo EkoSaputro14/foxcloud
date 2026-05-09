@@ -139,6 +139,8 @@ FoxCloud supports multiple proxy IPs for load balancing. Add multiple IPs separa
 PROXY_IP = "172.66.45.9:443,104.18.128.25:443,162.159.136.94:443"
 ```
 
+Destination domains are dialed using their original hostname (not pre-resolved IPs) so TLS SNI remains correct for strict HTTPS endpoints.
+
 ## 📱 Client Configuration
 
 After deployment, access your subscription configuration at:
