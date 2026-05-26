@@ -101,9 +101,18 @@ async function dialWithRetry(
   header: Header,
   proxyIPs: string[],
 ): Promise<DialResult> {
+  let address = header.address
+  if (isNaN(Number(address.split('.')[0]))) {
+    try {
+      address = await resolveDomain(address)
+    } catch (resolveErr) {
+      console.error(`Failed to resolve domain ${address}:`, resolveErr)
+    }
+  }
+
   try {
     return await dial(
-      { hostname: header.address, port: header.port },
+      { hostname: address, port: header.port },
       header,
     )
   } catch (primaryError) {
@@ -121,6 +130,33 @@ async function dialWithRetry(
   throw Error(
     `cannot connect to hostname: ${header.address}, port: ${header.port}`,
   )
+}
+
+async function resolveDomain(domain: string): Promise<string> {
+  try {
+    const response = await fetch(
+      `https://cloudflare-dns.com/dns-query?name=${domain}&type=A`,
+      {
+        headers: {
+          Accept: 'application/dns-json',
+        },
+      },
+    )
+
+    if (response.ok) {
+      const data: any = await response.json()
+      if (data.Answer && data.Answer.length > 0) {
+        const aRecord = data.Answer.find((record: any) => record.type === 1)
+        if (aRecord) {
+          return aRecord.data
+        }
+      }
+    }
+  } catch (err) {
+    console.error('DNS resolution error:', err)
+  }
+
+  return domain
 }
 
 async function pipeUplink(
