@@ -146,6 +146,28 @@ After deployment, access your subscription configuration at:
 https://your-worker.your-subdomain.workers.dev/sub
 ```
 
+### XHTTP (HTTP/2) Transport Migration
+
+If your client warns that WebSocket transport is deprecated, migrate to XHTTP with HTTP/2:
+
+- **Address / Host / SNI**: `your-worker.your-subdomain.workers.dev`
+- **Port**: `443`
+- **TLS**: enabled
+- **Transport**: `xhttp`
+- **Path**: `/xhttp`
+- **Method**: `POST`
+- **Headers**: set `Host` to your worker domain (same as address)
+
+For v2rayN/Xray:
+
+1. Edit your outbound node.
+2. Set network/transport to **xhttp**.
+3. Set path to **`/xhttp`**.
+4. Keep TLS enabled with server name matching your worker hostname.
+5. Save and reconnect.
+
+> Note: Cloudflare may accept HTTP/3 from edge clients, but FoxCloud currently documents and targets XHTTP over HTTP/2 for stable compatibility.
+
 See the [Subscription Guide](docs/subscription-guide.md) for detailed instructions on:
 - Configuring V2Ray compatible clients
 - Setting up mobile clients

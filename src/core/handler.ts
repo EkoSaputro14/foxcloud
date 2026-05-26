@@ -1,6 +1,7 @@
 import { errorPage, indexPage } from '../pages/index.ts'
 import { generateSubscription } from '../services/subscription.ts'
 import { processWebSocket } from '../network/websocket.ts'
+import { processXHTTP } from '../network/xhttp.ts'
 import { splitAndFilter } from '../utils/array.ts'
 
 import type { Env } from './types.ts'
@@ -15,16 +16,25 @@ export async function handleRequest(
   ctx: ExecutionContext
 ): Promise<Response> {
   try {
+    const url = new URL(request.url)
     const upgradeHeader = request.headers.get('Upgrade')
     
     // Handle WebSocket upgrade requests
     if (upgradeHeader && upgradeHeader === 'websocket') {
       return processWebSocket(request, env)
     }
+
+    // Handle XHTTP tunnel requests (HTTP/2 stream)
+    if (url.pathname === '/xhttp') {
+      const isXHTTPRequest = request.method === 'POST'
+      if (isXHTTPRequest) {
+        return await processXHTTP(request, env, ctx)
+      }
+      return await indexPage()
+    }
     
     // Handle regular HTTP requests
-    const url = new URL(request.url)
-    
+
     // Check for subscription requests with /sub path
     if (url.pathname === '/sub') {
       // Import the subscription page dynamically
